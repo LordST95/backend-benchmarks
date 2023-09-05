@@ -13,7 +13,7 @@ class MemberSerializer(serializers.ModelSerializer):
         depth = 2
 
 
-class CreateUserSerializer(serializers.ModelSerializer):
+class CreateUpdateUserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         write_only=True, required=True, validators=[validate_password])
     

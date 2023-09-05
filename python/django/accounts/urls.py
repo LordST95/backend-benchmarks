@@ -16,6 +16,6 @@ urlpatterns = [
     path("create_user/", views.CreateUserView.as_view(), name='create_user'),
     path("all/", views.UsersListView.as_view(), name='all_users'),
     path("user_info/", views.UserInfoView.as_view(), name='user_info'),
-    # path('user_info/edit/', views.EditProfileView.as_view(), name='edit_user_info'),
+    path('user_info/edit/', views.EditProfileView.as_view(), name='edit_user_info'),
 
 ]

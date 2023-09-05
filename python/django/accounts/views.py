@@ -1,6 +1,6 @@
-from rest_framework.generics import RetrieveAPIView, CreateAPIView, ListAPIView
+from rest_framework.generics import RetrieveAPIView, CreateAPIView, ListAPIView, UpdateAPIView
 
-from accounts.serializers import MemberSerializer, CreateUserSerializer
+from accounts.serializers import MemberSerializer, CreateUpdateUserSerializer
 
 from accounts.models import Member
 
@@ -19,4 +19,8 @@ class UsersListView(ListAPIView):
 
 
 class CreateUserView(CreateAPIView):
-    serializer_class = CreateUserSerializer
+    serializer_class = CreateUpdateUserSerializer
+
+
+class EditProfileView(UpdateAPIView):
+    serializer_class = CreateUpdateUserSerializer
