@@ -24,3 +24,7 @@ class CreateUserView(CreateAPIView):
 
 class EditProfileView(UpdateAPIView):
     serializer_class = CreateUpdateUserSerializer
+    
+    def get_object(self):
+        user = self.request.user
+        return user
