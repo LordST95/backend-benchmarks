@@ -17,8 +17,12 @@ class CreateUpdateUserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Member
-        fields = ['username', 'email', 'first_name' ,'last_name', 'password']
+        fields = ['id', 'username', 'email', 'first_name' ,'last_name', 'password']
 
     def create(self, validated_data):
         validated_data["password"] = make_password(validated_data["password"])
         return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        validated_data["password"] = make_password(validated_data["password"])
+        return super().update(instance, validated_data)

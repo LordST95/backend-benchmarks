@@ -28,6 +28,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
+    # django_extensions (shell_plus)
+    'django_extensions',
     # djangorestframework
     'rest_framework',
     # djangorestframework-simplejwt

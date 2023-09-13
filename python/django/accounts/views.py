@@ -1,7 +1,10 @@
-from rest_framework.generics import RetrieveAPIView, CreateAPIView, ListAPIView, UpdateAPIView
+from rest_framework.generics import (
+    RetrieveAPIView, CreateAPIView, ListAPIView, UpdateAPIView, DestroyAPIView
+)
+from rest_framework.permissions import AllowAny
+from django.conf import settings
 
 from accounts.serializers import MemberSerializer, CreateUpdateUserSerializer
-
 from accounts.models import Member
 
 
@@ -28,3 +31,8 @@ class EditProfileView(UpdateAPIView):
     def get_object(self):
         user = self.request.user
         return user
+
+
+class DeleteUserView(DestroyAPIView):
+    permission_classes = [AllowAny]
+    queryset = Member.objects.all().exclude(username = settings.MAIN_ADMIN_USER)
