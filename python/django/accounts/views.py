@@ -22,6 +22,7 @@ class UsersListView(ListAPIView):
 
 
 class CreateUserView(CreateAPIView):
+    permission_classes = [AllowAny]
     serializer_class = CreateUpdateUserSerializer
 
 

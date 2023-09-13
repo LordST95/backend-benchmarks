@@ -12,44 +12,48 @@ class DjangoTesterUser(HttpUser):
     """
     url: http://localhost:8000
     """
-    main_admin_user = "sina"
-    main_admin_pass = "123"
     
-    def on_start(self):
+    def __do_auth(self, username, password):
         r = self.client.post(
             "/accounts/auth/token/",
             json={
-                "username": self.main_admin_user,
-                "password": self.main_admin_pass
+                "username": username,
+                "password": password
             }
         )
         data = r.json()
         self.client.headers = {'Authorization': f"Bearer {data['access']}"}
-        # create a user
-        random_name = fake.unique.first_name()
-        email = f"{random_name}@gmail.com"
+    
+    def __add_created_user_to_a_list(self, creation_response):
+        data = creation_response.json()
+        created_users_list.append(data['id'])
+        print(f"create user with id #{data['id']}")
+        
+    def on_start(self):
+        self.username = fake.unique.first_name()
+        self.email = f"{self.username}@gmail.com"
+        self.password = self.email
         r = self.client.post(
             "/accounts/create_user/",
-            data={'username': random_name, 'email': email, 'password': email}
+            data={'username': self.username, 'email': self.email, 'password': self.email}
         )
         if r.status_code == 201:
-            data = r.json()
-            created_users_list.append(data['id'])
-            print(f"create user with id #{data['id']}")
+            self.__add_created_user_to_a_list(r)
+        self.__do_auth(self.username, self.email)
     
     def on_stop(self):
         for user_id in created_users_list:
             self.client.delete(f"/accounts/delete_user/{user_id}/")
             print(f"delete created user with id #{user_id}")
         print("all created users got deleted")
-        r = self.client.put(
-            "/accounts/user_info/edit/",
-            data={'username': self.main_admin_user, 'password': self.main_admin_pass}
-        )
-            
-        
+    
     @task
     def create_random_user(self):
+        """
+        create random user
+        
+        It's ok that this function fails sometimes, because some usernames are not unique.
+        """
         random_name = fake.unique.first_name()
         email = f"{random_name}@gmail.com"
         r = self.client.post(
@@ -57,19 +61,21 @@ class DjangoTesterUser(HttpUser):
             data={'username': random_name, 'email': email, 'password': email}
         )
         if r.status_code == 201:
-            data = r.json()
-            created_users_list.append(data['id'])
-            print(f"create user with id #{data['id']}")
+            self.__add_created_user_to_a_list(r)
 
     @task
-    def fetch_and_update_user(self):
-        r = self.client.get("/accounts/user_info/")
-        data = r.json()
+    def update_user_info(self):
         r = self.client.put(
             "/accounts/user_info/edit/",
-            data={'username': data['username'][::-1], 'password': self.main_admin_pass}
+            data={
+                'username': self.username,
+                'password': self.password,
+                'first_name': fake.first_name(),
+                'last_name': fake.last_name(),
+            }
         )
-        
+        self.__do_auth(self.username, self.email)
+    
     @task
     def fetch_users_list(self):
         self.client.get("/accounts/all/")
