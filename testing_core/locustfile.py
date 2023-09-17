@@ -79,3 +79,13 @@ class DjangoTesterUser(HttpUser):
     @task
     def fetch_users_list(self):
         self.client.get("/accounts/all/")
+
+
+class GoTesterUser(HttpUser):
+    """
+    url: http://localhost:3000
+    """
+    
+    @task
+    def fetch_homepage(self):
+        self.client.get("/")
