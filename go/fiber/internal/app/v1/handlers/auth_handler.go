@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"bytes"         // for having bytes object
@@ -8,18 +8,9 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
+
+	"example.com/m/internal/app/v1/models"
 )
-
-func main() {
-	app := fiber.New()
-
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
-	app.Get("/signin", Signin)
-
-	app.Listen(":3000")
-}
 
 // Create the JWT key used to create the signature
 var jwtKey = []byte("my_secret_key")
@@ -30,22 +21,9 @@ var users = map[string]string{
 	"user2": "password2",
 }
 
-// Create a struct to read the username and password from the request body
-type Credentials struct {
-	Password string `json:"password"`
-	Username string `json:"username"`
-}
-
-// Create a struct that will be encoded to a JWT.
-// We add jwt.RegisteredClaims as an embedded type, to provide fields like expiry time
-type Claims struct {
-	Username string `json:"username"`
-	jwt.RegisteredClaims
-}
-
 // Create the Signin handler
 func Signin(c *fiber.Ctx) error {
-	var creds Credentials
+	var creds models.Credentials
 
 	reader := bytes.NewReader(c.Body())
 	err := json.NewDecoder(reader).Decode(&creds)
@@ -70,7 +48,7 @@ func Signin(c *fiber.Ctx) error {
 	// here, we have kept it as 5 minutes
 	expirationTime := time.Now().Add(5 * time.Minute)
 	// Create the JWT claims, which includes the username and expiry time
-	claims := &Claims{
+	claims := &models.Claims{
 		Username: creds.Username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			// In JWT, the expiry time is expressed as unix milliseconds
